@@ -1,13 +1,18 @@
-/* eslint-disable no-unused-vars */
+/* eslint-disable react-refresh/only-export-components */
 import { Link, useLoaderData } from "react-router-dom"
-// import { customFetch, formatPrice, generateAmountOptions } from "../utils/index.jsx"
 import { useState } from "react"
 import { customFetch, formatPrice, generateAmountOptions } from "../utils"
 import { useDispatch } from "react-redux"
 import { addItem } from "../features/cart/cartSlice"
 
-export const loader = async ({params}) =>{
-  const response = await customFetch(`/products/${params.id}`)
+const singleProductQuery =(id)=>{
+  return {queryKey: ['singleProduct', id], 
+    queryFn: ()=> customFetch(`/products/${id}`)
+  }
+}
+
+export const loader= (queryClient) => async ({params}) =>{
+  const response = await queryClient.ensureQueryData(singleProductQuery(params.id))
   return {product: response.data.data}
 } 
 const SingleProduct = () => {
@@ -90,7 +95,7 @@ const SingleProduct = () => {
         </div>
         {/* CART BTN */}
         <div className="mt-10">
-          <button className="btn btn-secondary btn-md" onClick={addToCart}>
+          <button className="btn btn-secondary btn-md" onClick={addToCart }>
             Add to bag
           </button>
         </div>

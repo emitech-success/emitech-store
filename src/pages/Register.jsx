@@ -1,5 +1,22 @@
-import { Form, Link } from "react-router-dom";
+/* eslint-disable react-refresh/only-export-components */
+import { Form, Link, redirect } from "react-router-dom";
 import { FormIput, SubmitBtn } from "../components";
+import { customFetch } from "../utils";
+import { toast } from "react-toastify";
+
+export const action = async ({request}) =>{
+  const formData = await request.formData()
+  const data = Object.fromEntries(formData)
+  try {
+    const response = await customFetch.post('/auth/local/register', data)
+    toast.success('Account created successfully');
+    console.log(response)
+    return redirect('/login')
+  } catch (error) {
+    const errormsg = error?.response?.data?.error?.message || 'please double check your credentials'
+    toast.error(errormsg)
+  } 
+}
 
 const Register = () => {
   

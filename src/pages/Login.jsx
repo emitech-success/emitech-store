@@ -1,6 +1,30 @@
-import { Form, Link } from "react-router-dom"
+/* eslint-disable react-refresh/only-export-components */
+import { Form, Link, redirect, } from "react-router-dom"
 import { FormIput, SubmitBtn } from "../components"
+import { customFetch } from "../utils"
+import { toast } from "react-toastify";
+import { loginUser } from "../features/user/userSlice"
 
+
+export const action =
+  (store) =>
+  async ({ request }) => {
+    const formData = await request.formData();
+    const data = Object.fromEntries(formData);
+    try {
+      const response = await customFetch.post('/auth/local', data);
+     store.dispatch(loginUser(response.data));
+     console.log(response)
+     toast.success('Logged in successfully');
+     return redirect('/');
+  
+   } catch (error) {
+     const errormsg = error?.response?.data?.error?.message || 'please double check your credentials'
+     toast.error(errormsg)
+   } 
+  
+  return null
+}
 
 const Login = () => {
   
@@ -16,9 +40,6 @@ const Login = () => {
         <div className="mt-4">
           <SubmitBtn text='login'/>
         </div>
-        <button type="button" className="btn btn-secondary btn-block">
-            guest user
-          </button>
           <p className="text-center">
             Not a member yet? <Link to='/register' 
             className="ml-2 link link-hover link-primary capitalize">
